@@ -1,0 +1,83 @@
+<?php
+/**
+ * Created by Thibaud BARDIN (Irvyne)
+ * This code is under the MIT License (https://github.com/Irvyne/license/blob/master/MIT.md)
+ */
+
+class ArticleManager
+{
+    /**
+     * @var \PDO
+     */
+    private $pdo;
+
+    const TABLE = 'article';
+
+    /**
+     * @param PDO $pdo
+     */
+    public function __construct(\PDO $pdo)
+    {
+        $this->pdo = $pdo;
+    }
+
+    public function add(\Article $article)
+    {
+        $sql = 'INSERT INTO '.self::TABLE.' (id, title, content, fk_author, date, enabled) VALUES (:id, :title, :content, :fk_author, :date, :enabled)';
+        $prepare = $this->pdo->prepare($sql);
+        $query = $prepare->execute(array(
+            ':id'           => null,
+            ':title'        => $article->getTitle(),
+            ':content'      => $article->getContent(),
+            ':fk_author'    => $article->getAuthor(),
+            ':date'         => $article->getDate(),
+            ':enabled'      => $article->getEnabled(),
+        ));
+        return $query;
+    }
+
+    public function findAll()
+    {
+        $sql = 'SELECT * FROM '.self::TABLE;
+        $query = $this->pdo->query($sql);
+        return $query->fetchAll(\PDO::FETCH_ASSOC);
+        //TODO a modifier pour renvoyer des objets Article
+    }
+
+    public function find($id)
+    {
+        $sql = 'SELECT * FROM '.self::TABLE.' WHERE id = '.$this->pdo->quote($id, \PDO::PARAM_INT);
+        $query = $this->pdo->query($sql);
+        $result = $query->fetchAll(\PDO::FETCH_ASSOC);
+        return new Article($result);
+        //TODO a modifier pour renvoyer un objet Article
+    }
+
+    public function update(\Article $article)
+    {
+        $sql = 'UPDATE '.self::TABLE.' SET  title = :title, content = :content, fk_author = :fk_auhtor, date = :date, enabled = :enabled WHERE id = :id';
+        $prepare = $this->pdo->prepare($sql);
+        $query = $prepare->execute(array(
+            ':id'           => $article->getId(),
+            ':title'        => $article->getTitle(),
+            ':content'      => $article->getContent(),
+            ':fk_author'    => $article->getAuthor(),
+            ':date'         => $article->getDate(),
+            ':enabled'      => $article->getEnabled(),
+        ));
+        return $query;
+    }
+
+    public function delete($argument)
+    {
+        if (is_int($argument))
+            $id = $argument;
+        elseif ($argument instanceof Article)
+            $id = $argument->getId();
+        else
+            throw new Exception('$argument must be of type integer or object');
+
+        $sql = 'DELETE FROM '.self::TABLE.' WHERE id = '.$this->pdo->quote($id, \PDO::PARAM_INT);
+        return $this->pdo->exec($sql);
+    }
+} 
