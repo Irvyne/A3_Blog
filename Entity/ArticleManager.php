@@ -40,6 +40,9 @@ class ArticleManager
         return $query;
     }
 
+    /**
+     * @return array
+     */
     public function findAll()
     {
         $sql = 'SELECT * FROM '.self::TABLE;
@@ -52,15 +55,42 @@ class ArticleManager
         return $articles;
     }
 
+    public function findAllBy($attribute, $value)
+    {
+        $sql = 'SELECT * FROM '.self::TABLE.' WHERE :attribute = :value';
+        $prepare = $this->pdo->prepare($sql);
+        $query = $prepare->execute(array(
+            ':attribute'    => $attribute,
+            ':value'        => $value,
+        ));
+        if ($query) {
+            $result = $prepare->fetchAll(\PDO::FETCH_ASSOC);
+            $articles = array();
+            foreach ($result as $article) {
+                $articles[] = new Article($article);
+            }
+            return $articles;
+        } else
+            return false;
+        //TODO findAllBy ne fonctionne pas, tableau vide renvoyé!
+    }
+
+    /**
+     * @param $id
+     * @return Article
+     */
     public function find($id)
     {
         $sql = 'SELECT * FROM '.self::TABLE.' WHERE id = '.$this->pdo->quote($id, \PDO::PARAM_INT);
         $query = $this->pdo->query($sql);
-        $result = $query->fetchAll(\PDO::FETCH_ASSOC);
+        $result = $query->fetch(\PDO::FETCH_ASSOC);
         return new Article($result);
-        //TODO a modifier pour renvoyer un objet Article
     }
 
+    /**
+     * @param Article $article
+     * @return bool
+     */
     public function update(\Article $article)
     {
         $sql = 'UPDATE '.self::TABLE.' SET  title = :title, content = :content, author = :author, date = :date, enabled = :enabled WHERE id = :id';
@@ -76,6 +106,11 @@ class ArticleManager
         return $query;
     }
 
+    /**
+     * @param $argument
+     * @return int
+     * @throws Exception
+     */
     public function delete($argument)
     {
         if (is_int($argument))
@@ -87,5 +122,26 @@ class ArticleManager
 
         $sql = 'DELETE FROM '.self::TABLE.' WHERE id = '.$this->pdo->quote($id, \PDO::PARAM_INT);
         return $this->pdo->exec($sql);
+    }
+
+    public function __call($name, $arguments)
+    {
+        switch (true):
+            case (0 === strpos($name, 'findAllBy')):
+                $by = substr($name, 9);
+                $method = 'findAllBy';
+                break;
+            case (0 === strpos($name, 'findOneBy')):
+                $by = substr($name, 9);
+                $method = 'findOneBy';
+                break;
+            default:
+                throw new BadMethodCallException(sprintf(
+                    'Undefined method %s. The method name must start with either findAllBy or findOneBy!',
+                    $name
+                ));
+        endswitch;
+
+        $by = lcfirst($by);
     }
 } 

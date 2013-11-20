@@ -4,15 +4,7 @@
  * This code is under the MIT License (https://github.com/Irvyne/license/blob/master/MIT.md)
  */
 
-//require 'Entity/ArticleManager.php';
-
-spl_autoload_register(function($className){
-    $fileName = $className.'.php';
-    if (is_file('Entity/'.$fileName)) {
-        require 'Entity/'.$fileName;
-    }
-});
-
+require 'autoload.php';
 $config = require 'config/database.php';
 
 try {
@@ -34,6 +26,12 @@ $article = new Article(array(
 
 $articleManager = new ArticleManager($pdo);
 
-$articles = $articleManager->findAll();
+$articleManager->findAllByEnabled(true);
 
-var_dump($articles);
+/*
+foreach ($articles as $article) {
+    echo '<h1>'.$article->getTitle().'</h1>';
+    echo '<small>'.$article->getDate()->format(\DateTimeFormat::DATE_FRENCH).'</small>';
+    echo '<hr>';
+}
+*/
