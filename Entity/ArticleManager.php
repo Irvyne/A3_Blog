@@ -143,5 +143,22 @@ class ArticleManager
         endswitch;
 
         $by = lcfirst($by);
+
+        $reflection = new ReflectionObject(new Article());
+        $attributes = $reflection->getProperties();
+        foreach ($attributes as $attribute) {
+            static $attribute_exists = false;
+            if ($by === $attribute->getName()) {
+                $attribute_exists = true;
+                break;
+            }
+        }
+        var_dump($attribute_exists);
+
+        var_dump(property_exists(new Article(), $by));
+
+        //TODO tester si l'attribut/propriété $by existe
+
+        //TODO lancer la méthode avec le bon argument
     }
 } 

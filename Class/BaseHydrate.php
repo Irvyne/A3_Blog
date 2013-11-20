@@ -6,7 +6,7 @@
 
 abstract class BaseHydrate
 {
-    public function __construct(array $data)
+    public function __construct(array $data = null)
     {
         if (null !== $data)
             $this->hydrate($data);
