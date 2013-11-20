@@ -79,11 +79,14 @@ class Article extends BaseHydrate
     }
 
     /**
-     * @param \DateTime $date
+     * @param \DateTime|string $argument
      */
-    public function setDate(\DateTime $date)
+    public function setDate($argument)
     {
-        $this->date = $date;
+        if ($argument instanceof \DateTime)
+            $this->date = $argument;
+        else
+            $this->date = new DateTime($argument);
     }
 
     /**
@@ -95,15 +98,17 @@ class Article extends BaseHydrate
     }
 
     /**
-     * @param $enabled
+     * @param boolean|int|string $enabled
      * @throws Exception
      */
     public function setEnabled($enabled)
     {
         if (is_bool($enabled))
             $this->enabled = $enabled;
+        elseif (is_int($enabled) || is_string($enabled))
+            $this->enabled = (bool) $enabled;
         else
-            throw new Exception('$enabled must be a boolean!');
+            throw new Exception('$enabled must be a boolean, an integer or a string!');
     }
 
     /**

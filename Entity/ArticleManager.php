@@ -21,16 +21,20 @@ class ArticleManager
         $this->pdo = $pdo;
     }
 
+    /**
+     * @param Article $article
+     * @return bool
+     */
     public function add(\Article $article)
     {
-        $sql = 'INSERT INTO '.self::TABLE.' (id, title, content, fk_author, date, enabled) VALUES (:id, :title, :content, :fk_author, :date, :enabled)';
+        $sql = 'INSERT INTO '.self::TABLE.' (id, title, content, author, date, enabled) VALUES (:id, :title, :content, :author, :date, :enabled)';
         $prepare = $this->pdo->prepare($sql);
         $query = $prepare->execute(array(
             ':id'           => null,
             ':title'        => $article->getTitle(),
             ':content'      => $article->getContent(),
-            ':fk_author'    => $article->getAuthor(),
-            ':date'         => $article->getDate(),
+            ':author'       => $article->getAuthor(),
+            ':date'         => $article->getDate()->format(\DateTimeFormat::MYSQL_DATETIME),
             ':enabled'      => $article->getEnabled(),
         ));
         return $query;
@@ -40,8 +44,12 @@ class ArticleManager
     {
         $sql = 'SELECT * FROM '.self::TABLE;
         $query = $this->pdo->query($sql);
-        return $query->fetchAll(\PDO::FETCH_ASSOC);
-        //TODO a modifier pour renvoyer des objets Article
+        $result = $query->fetchAll(\PDO::FETCH_ASSOC);
+        $articles = array();
+        foreach ($result as $article) {
+            $articles[] = new Article($article);
+        }
+        return $articles;
     }
 
     public function find($id)
@@ -55,14 +63,14 @@ class ArticleManager
 
     public function update(\Article $article)
     {
-        $sql = 'UPDATE '.self::TABLE.' SET  title = :title, content = :content, fk_author = :fk_auhtor, date = :date, enabled = :enabled WHERE id = :id';
+        $sql = 'UPDATE '.self::TABLE.' SET  title = :title, content = :content, author = :author, date = :date, enabled = :enabled WHERE id = :id';
         $prepare = $this->pdo->prepare($sql);
         $query = $prepare->execute(array(
             ':id'           => $article->getId(),
             ':title'        => $article->getTitle(),
             ':content'      => $article->getContent(),
-            ':fk_author'    => $article->getAuthor(),
-            ':date'         => $article->getDate(),
+            ':author'       => $article->getAuthor(),
+            ':date'         => $article->getDate()->format(\DateTimeFormat::MYSQL_DATETIME),
             ':enabled'      => $article->getEnabled(),
         ));
         return $query;

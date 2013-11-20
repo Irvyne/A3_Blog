@@ -25,12 +25,15 @@ try {
 
 $article = new Article(array(
     'id'        => 2,
-    'title'     => 'ezfze',
-    'content'   => 'ergefefezf zefez ',
+    'title'     => 'Nouveau titre',
+    'content'   => 'content',
     'author'    => 1,
     'date'      => new DateTime(),
     'enabled'   => true,
 ));
 
+$articleManager = new ArticleManager($pdo);
 
-var_dump($article);
+$articles = $articleManager->findAll();
+
+var_dump($articles);
