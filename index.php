@@ -26,7 +26,8 @@ $article = new Article(array(
 
 $articleManager = new ArticleManager($pdo);
 
-var_dump($articleManager->findAllByEnabled(true));
+var_dump($articleManager->findAllByEnabled(false));
+var_dump($articleManager->findOneByTitle('abc'));
 
 /*
 foreach ($articles as $article) {

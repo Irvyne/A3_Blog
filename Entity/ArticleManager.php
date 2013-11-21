@@ -55,12 +55,16 @@ class ArticleManager
         return $articles;
     }
 
-    public function findAllBy($attribute, $value)
+    /**
+     * @param $attribute
+     * @param $value
+     * @return array|bool
+     */
+    protected function findAllBy($attribute, $value)
     {
-        $sql = 'SELECT * FROM '.self::TABLE.' WHERE :attribute = :value';
+        $sql = 'SELECT * FROM '.self::TABLE.' WHERE '.$attribute.' = :value';
         $prepare = $this->pdo->prepare($sql);
         $query = $prepare->execute(array(
-            ':attribute'    => $attribute,
             ':value'        => $value,
         ));
         if ($query) {
@@ -72,7 +76,25 @@ class ArticleManager
             return $articles;
         } else
             return false;
-        //TODO findAllBy ne fonctionne pas, tableau vide renvoyé!
+    }
+
+    /**
+     * @param $attribute
+     * @param $value
+     * @return Article|bool
+     */
+    protected function findOneBy($attribute, $value)
+    {
+        $sql = 'SELECT * FROM '.self::TABLE.' WHERE '.$attribute.' = :value';
+        $prepare = $this->pdo->prepare($sql);
+        $query = $prepare->execute(array(
+            ':value' => $value,
+        ));
+        if ($query) {
+            $result = $prepare->fetch(\PDO::FETCH_ASSOC);
+            return new Article($result);
+        } else
+            return true;
     }
 
     /**
@@ -144,21 +166,13 @@ class ArticleManager
 
         $by = lcfirst($by);
 
-        $reflection = new ReflectionObject(new Article());
-        $attributes = $reflection->getProperties();
-        foreach ($attributes as $attribute) {
-            static $attribute_exists = false;
-            if ($by === $attribute->getName()) {
-                $attribute_exists = true;
-                break;
-            }
+        if (property_exists(new Article(), $by)) {
+            return $this->$method($by, $arguments[0]);
+        } else {
+            throw new InvalidArgumentException(sprintf(
+               'Property %s doesn\'t exist in class Article',
+                $by
+            ));
         }
-        var_dump($attribute_exists);
-
-        var_dump(property_exists(new Article(), $by));
-
-        //TODO tester si l'attribut/propriété $by existe
-
-        //TODO lancer la méthode avec le bon argument
     }
 } 
