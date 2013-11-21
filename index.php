@@ -15,19 +15,18 @@ try {
     exit('BDD Error');
 }
 
-$article = new Article(array(
+$user = new User(array(
     'id'        => 2,
-    'title'     => 'Nouveau titre',
-    'content'   => 'content',
-    'author'    => 1,
-    'date'      => new DateTime(),
-    'enabled'   => true,
+    'name'      => 'admin',
+    'password'  => 'admin',
+    'role'      => 'ROLE_ADMIN',
 ));
 
-$articleManager = new ArticleManager($pdo);
+$userManager = new UserManager($pdo);
 
-var_dump($articleManager->findAllByEnabled(false));
-var_dump($articleManager->findOneByTitle('abc'));
+var_dump($userManager->add($user));
+
+
 
 /*
 foreach ($articles as $article) {
