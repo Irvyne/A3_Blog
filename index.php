@@ -22,11 +22,36 @@ $user = new User(array(
     'role'      => 'ROLE_ADMIN',
 ));
 
-$userManager = new UserManager($pdo);
+if (isset($_POST['submit']))
+{
+    $title = $_POST['title'];
+    $content = $_POST['content'];
+    $author = $_POST['author'];
+    true === isset($_POST['enabled']) ? $enabled = true : $enabled = false;
 
-var_dump($userManager->add($user));
+    $error_msg = array();
+    if (empty($title))
+        $error_msg[] = 'Champ title vide !';
+    if (empty($content))
+        $error_msg[] = 'Champ content vide !';
+    if (empty($author))
+        $error_msg[] = 'Champ auteur vide !';
 
+    if (count($error_msg) == 0) {
+        $arguments = array(
+            'title'     => $title,
+            'content'   => $content,
+            'author'    => $author,
+            'enabled'   => $enabled,
+            'date'      => new DateTime(),
+        );
+        $article = new Article($arguments);
+        $articleManager = new ArticleManager($pdo);
+        $articleManager->add($article);
+    }
+}
 
+include 'template/add.php';
 
 /*
 foreach ($articles as $article) {

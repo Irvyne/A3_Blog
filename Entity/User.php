@@ -77,7 +77,7 @@ class User extends BaseHydrate
     public function setPassword($password)
     {
         if (is_string($password))
-            $this->password = $password;
+            $this->password = self::hashPassword($password);
         else
             throw new Exception('$password must be a string!');
     }
@@ -108,5 +108,14 @@ class User extends BaseHydrate
     public function getRole()
     {
         return $this->role;
+    }
+
+    /**
+     * @param $password
+     * @return string
+     */
+    protected static function hashPassword($password)
+    {
+        return sha1($password);
     }
 } 

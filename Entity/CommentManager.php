@@ -4,21 +4,17 @@
  * This code is under the MIT License (https://github.com/Irvyne/license/blob/master/MIT.md)
  */
 
-class CommentManager
+class CommentManager extends BaseManager
 {
-    /**
-     * @var \PDO
-     */
-    private $pdo;
-
-    const TABLE = 'comment';
+    const ENTITY    = 'Comment';
+    const TABLE     = 'comment';
 
     /**
      * @param PDO $pdo
      */
     public function __construct(\PDO $pdo)
     {
-        $this->pdo = $pdo;
+        parent::__construct($pdo);
     }
 
     /**
@@ -140,42 +136,5 @@ class CommentManager
 
         $sql = 'DELETE FROM '.self::TABLE.' WHERE id = '.$this->pdo->quote($id, \PDO::PARAM_INT);
         return $this->pdo->exec($sql);
-    }
-
-    /**
-     * @param $name
-     * @param $arguments
-     * @return mixed
-     * @throws InvalidArgumentException
-     * @throws BadMethodCallException
-     */
-    public function __call($name, $arguments)
-    {
-        switch (true):
-            case (0 === strpos($name, 'findAllBy')):
-                $by = substr($name, 9);
-                $method = 'findAllBy';
-                break;
-            case (0 === strpos($name, 'findOneBy')):
-                $by = substr($name, 9);
-                $method = 'findOneBy';
-                break;
-            default:
-                throw new BadMethodCallException(sprintf(
-                    'Undefined method %s. The method name must start with either findAllBy or findOneBy!',
-                    $name
-                ));
-        endswitch;
-
-        $by = lcfirst($by);
-
-        if (property_exists(new Comment(), $by)) {
-            return $this->$method($by, $arguments[0]);
-        } else {
-            throw new InvalidArgumentException(sprintf(
-                'Property %s doesn\'t exist in class Comment',
-                $by
-            ));
-        }
     }
 } 
