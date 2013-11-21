@@ -4,7 +4,7 @@
  * This code is under the MIT License (https://github.com/Irvyne/license/blob/master/MIT.md)
  */
 
-class User
+class User extends BaseHydrate
 {
     /**
      * @var int
@@ -25,6 +25,14 @@ class User
      * @var string
      */
     private $role;
+
+    /**
+     * @param array $data
+     */
+    public function __construct(array $data = null)
+    {
+        parent::__construct($data);
+    }
 
     /**
      * @param int $id

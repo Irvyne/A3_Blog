@@ -36,7 +36,9 @@ class Article extends BaseHydrate
      */
     private $enabled;
 
-
+    /**
+     * @param array $data
+     */
     public function __construct(array $data = null)
     {
         parent::__construct($data);
