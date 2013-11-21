@@ -146,6 +146,13 @@ class ArticleManager
         return $this->pdo->exec($sql);
     }
 
+    /**
+     * @param $name
+     * @param $arguments
+     * @return mixed
+     * @throws InvalidArgumentException
+     * @throws BadMethodCallException
+     */
     public function __call($name, $arguments)
     {
         switch (true):

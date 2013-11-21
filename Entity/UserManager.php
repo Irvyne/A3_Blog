@@ -139,11 +139,22 @@ class UserManager
         return $this->pdo->exec($sql);
     }
 
+    /**
+     * @param $password
+     * @return string
+     */
     protected static function hashPassword($password)
     {
         return sha1($password);
     }
 
+    /**
+     * @param $name
+     * @param $arguments
+     * @return mixed
+     * @throws InvalidArgumentException
+     * @throws BadMethodCallException
+     */
     public function __call($name, $arguments)
     {
         switch (true):
